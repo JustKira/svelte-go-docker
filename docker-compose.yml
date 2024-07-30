@@ -16,14 +16,13 @@ services:
         soft: 65535
         hard: 65535
     ports:
-      - "6002:6002" # Changed both external and internal port to 6002
-    command: ["--port=6002"]
+      - "6379:6379" # Changed both external and internal port to 6002
     volumes:
       - dragonfly_data:/data
 
   centrifugal:
     image: centrifugo/centrifugo
-    command: centrifugo -c config.json --engine=redis --redis_address=redis://dragonfly:6002 --port=6003
+    command: centrifugo -c config.json --engine=redis --redis_address=redis://dragonfly:6379 --port=6003
     depends_on:
       - dragonfly
     ports:
