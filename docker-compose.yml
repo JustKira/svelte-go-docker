@@ -1,0 +1,46 @@
+services:
+  surrealdb:
+    image: surrealdb/surrealdb:latest
+    user: root
+    ports:
+      - "5731:5731"
+    command: ["start", "--bind", "0.0.0.0:5731", "file://data/srdb.db"]
+    volumes:
+      - surrealdb_data:/data
+
+  dragonfly:
+    image: "docker.dragonflydb.io/dragonflydb/dragonfly"
+    ulimits:
+      memlock: -1
+      nofile:
+        soft: 65535
+        hard: 65535
+    ports:
+      - "6379:6379"
+    volumes:
+      - dragonfly_data:/data
+
+  centrifugal:
+    image: centrifugo/centrifugo
+    command: centrifugo -c config.json --engine=redis --redis_address=redis://dragonfly:6379
+    depends_on:
+      - dragonfly
+    ports:
+      - "6500:6500"
+    volumes:
+      - "./config:/centrifugo"
+    ulimits:
+      nproc: 65536
+      nofile:
+        soft: 65536
+        hard: 65536
+  web:
+    build:
+      context: ./sveltekit
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+
+volumes:
+  surrealdb_data:
+  dragonfly_data:

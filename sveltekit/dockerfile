@@ -1,0 +1,19 @@
+FROM node:lts-alpine as build
+WORKDIR /app
+COPY ./package*.json ./
+
+RUN npm install -g pnpm
+RUN pnpm install
+COPY . .
+RUN pnpm run build
+
+FROM node:lts-alpine AS production
+
+WORKDIR /app
+
+COPY --from=build /app/build /app/build
+COPY --from=build /app/package.json /app/package.json
+COPY --from=build /app/pnpm-lock.yaml /app/pnpm-lock.yaml
+
+EXPOSE 3000
+CMD ["node", "build"]
