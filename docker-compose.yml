@@ -3,8 +3,8 @@ services:
     image: surrealdb/surrealdb:latest
     user: root
     ports:
-      - "6001:6001" # Changed both external and internal port to 6001
-    command: ["start", "--bind", "0.0.0.0:6001", "file://data/srdb.db"]
+      - "6006:6006" # Changed both external and internal port to 6006
+    command: ["start", "--bind", "0.0.0.0:6006", "file://data/srdb.db"]
     volumes:
       - surrealdb_data:/data
 
